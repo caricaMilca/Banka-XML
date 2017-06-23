@@ -6,7 +6,7 @@
 //
 
 
-package banka.nalog;
+package firma.nalog;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

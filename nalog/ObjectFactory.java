@@ -6,7 +6,7 @@
 //
 
 
-package banka.nalog;
+package firma.nalog;
 
 import javax.xml.bind.annotation.XmlRegistry;
 

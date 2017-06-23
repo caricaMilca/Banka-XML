@@ -44,9 +44,9 @@ public class WebServisKonfiguracija extends WsConfigurerAdapter {
 	public DefaultWsdl11Definition defaultWsdl11Definition(CommonsXsdSchemaCollection schemaCollection)
 			throws Exception {
 		DefaultWsdl11Definition wsdl11Definition = new DefaultWsdl11Definition();
-		wsdl11Definition.setPortTypeName("firmaPort");
+		wsdl11Definition.setPortTypeName("bankaPort");
 		wsdl11Definition.setLocationUri("/ws");
-		wsdl11Definition.setTargetNamespace("http://firma/ws/");
+		wsdl11Definition.setTargetNamespace("http://banka/ws/");
 		wsdl11Definition.setSchemaCollection(schemaCollection);
 		return wsdl11Definition;
 	}

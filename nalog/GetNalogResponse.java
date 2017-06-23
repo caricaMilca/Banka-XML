@@ -6,7 +6,7 @@
 //
 
 
-package banka.nalog;
+package firma.nalog;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -38,8 +38,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "", propOrder = {
     "nalog"
 })
-@XmlRootElement(name = "getNalogRequest")
-public class GetNalogRequest {
+@XmlRootElement(name = "getNalogResponse")
+public class GetNalogResponse {
 
     @XmlElement(required = true)
     protected Nalog nalog;

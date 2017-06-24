@@ -20,6 +20,14 @@
         </xs:restriction>
     </xs:simpleType>
     
+  <xs:simpleType name="decimalni15-2">
+		<xs:restriction base="xs:decimal">
+			<xs:minInclusive value="0"></xs:minInclusive>
+			<xs:fractionDigits value="2"></xs:fractionDigits>
+			<xs:totalDigits value="17"></xs:totalDigits>
+		</xs:restriction>
+	</xs:simpleType>
+    
     <xs:simpleType name="slovo3">
         <xs:restriction base="xs:string">
             <xs:minLength value="3" />
@@ -31,6 +39,20 @@
         <xs:restriction base="xs:string">
             <xs:minLength value="18" />
             <xs:maxLength value="18" />
+        </xs:restriction>
+    </xs:simpleType>
+    
+        <xs:simpleType name="string255">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1" />
+            <xs:maxLength value="255" />
+        </xs:restriction>
+    </xs:simpleType>
+    
+     <xs:simpleType name="slovo8">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="8" />
+            <xs:maxLength value="8" />
         </xs:restriction>
     </xs:simpleType>
     
@@ -54,6 +76,7 @@
             <xs:maxLength value="255" />
         </xs:restriction>
     </xs:simpleType>
+    
     
 </xs:schema>
 

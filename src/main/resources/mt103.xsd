@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://banka/mt103" xmlns:rtgs="http://banka/mt103" xmlns:xsT="http://paket/tipovi" elementFormDefault="qualified">
+	<xs:import namespace="http://paket/tipovi"
+		schemaLocation="tipovi.xsd" />
+		
+	<xs:element name="GetMT103Request">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="MT103" type="rtgs:MT103" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+		
+		<xs:complexType name="MT103">
+			<xs:sequence>
+				<xs:element name="idPoruke" type="xsT:slovo50"></xs:element>
+				<xs:element name="swifKodBankeDuznika" type="xsT:slovo8"></xs:element>
+				<xs:element name="obracunskiRacunBankeDuznika" type="xsT:slovo18"></xs:element>
+				<xs:element name="swiftKodBankePoverioca" type="xsT:slovo8"></xs:element>
+				<xs:element name="obracunskiRacunBankePoverioca" type="xsT:slovo18"></xs:element>
+				<xs:element name="duznik" type="xsT:string255"></xs:element>
+				<xs:element name="svrhaPlacanja" type="xsT:string255"></xs:element>
+				<xs:element name="primalac" type="xsT:string255"></xs:element>
+				<xs:element name="datumNaloga" type="xs:date" ></xs:element>
+				<xs:element name="datumValute" type="xs:date" ></xs:element>
+				<xs:element name="racunDuznika" type="xsT:slovo18"></xs:element>
+				<xs:element name="modelZaduzenja" type="xsT:broj2"></xs:element>
+				<xs:element name="pozivNaBrojZaduzenja" type="xsT:slovo20"></xs:element>
+				<xs:element name="racunPoverioca" type="xsT:slovo18"></xs:element>
+				<xs:element name="modelOdobrenja" type="xsT:broj2"></xs:element>
+				<xs:element name="pozivNaBrojOdobrenja" type="xsT:slovo20"></xs:element>
+				<xs:element name="iznos" type="xsT:decimalni15-2" ></xs:element>
+				<xs:element name="sifraValute" type="xsT:slovo3" ></xs:element>
+			</xs:sequence>
+		</xs:complexType>
+</xs:schema>

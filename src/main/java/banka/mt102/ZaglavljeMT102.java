@@ -6,7 +6,7 @@
 //
 
 
-package banka.mt900;
+package banka.mt102;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -28,22 +28,24 @@ import xmlTransformacije.Adapter1;
 
 
 /**
- * <p>Java class for MT900 complex type.
+ * <p>Java class for ZaglavljeMT102 complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="MT900">
+ * &lt;complexType name="ZaglavljeMT102">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;element name="idPoruke" type="{http://paket/tipovi}slovo50"/>
- *         &lt;element name="swifKodBankeDuznika" type="{http://paket/tipovi}slovo8"/>
- *         &lt;element name="obracunskiRacunBankeDuznika" type="{http://paket/tipovi}slovo20"/>
- *         &lt;element name="idPorukeNaloga" type="{http://paket/tipovi}slovo50"/>
- *         &lt;element name="datumValute" type="{http://www.w3.org/2001/XMLSchema}date"/>
- *         &lt;element name="iznos" type="{http://paket/tipovi}decimalni15-2"/>
+ *         &lt;element name="swiftKodBankeDuznika" type="{http://paket/tipovi}slovo8"/>
+ *         &lt;element name="obracunskiRacunBankeDuznika" type="{http://paket/tipovi}slovo18"/>
+ *         &lt;element name="swiftKodBankePoverioca" type="{http://paket/tipovi}slovo8"/>
+ *         &lt;element name="obracunskiRacunBankePoverioca" type="{http://paket/tipovi}slovo18"/>
+ *         &lt;element name="ukupanIznos" type="{http://paket/tipovi}decimalni15-2"/>
  *         &lt;element name="sifraValute" type="{http://paket/tipovi}slovo3"/>
+ *         &lt;element name="datumValute" type="{http://www.w3.org/2001/XMLSchema}date"/>
+ *         &lt;element name="datum" type="{http://www.w3.org/2001/XMLSchema}date"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -53,17 +55,19 @@ import xmlTransformacije.Adapter1;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "MT900", propOrder = {
+@XmlType(name = "ZaglavljeMT102", propOrder = {
     "idPoruke",
-    "swifKodBankeDuznika",
+    "swiftKodBankeDuznika",
     "obracunskiRacunBankeDuznika",
-    "idPorukeNaloga",
+    "swiftKodBankePoverioca",
+    "obracunskiRacunBankePoverioca",
+    "ukupanIznos",
+    "sifraValute",
     "datumValute",
-    "iznos",
-    "sifraValute"
+    "datum"
 })
 @Entity
-public class MT900 {
+public class ZaglavljeMT102 {
 	@XmlTransient
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -73,21 +77,59 @@ public class MT900 {
     @XmlElement(required = true)
     protected String idPoruke;
     @XmlElement(required = true)
-    protected String swifKodBankeDuznika;
+    protected String swiftKodBankeDuznika;
     @XmlElement(required = true)
     protected String obracunskiRacunBankeDuznika;
     @XmlElement(required = true)
-    protected String idPorukeNaloga;
+    protected String swiftKodBankePoverioca;
+    @XmlElement(required = true)
+    protected String obracunskiRacunBankePoverioca;
+    @XmlElement(required = true)
+    protected BigDecimal ukupanIznos;
+    @XmlElement(required = true)
+    protected String sifraValute;
     @XmlElement(required = true)
     @XmlSchemaType(name = "date")
     @XmlJavaTypeAdapter(Adapter1.class)
     protected Date datumValute;
     @XmlElement(required = true)
-    protected BigDecimal iznos;
-    @XmlElement(required = true)
-    protected String sifraValute;
+    @XmlSchemaType(name = "date")
+    @XmlJavaTypeAdapter(Adapter1.class)
+    protected Date datum;
 
-    /**
+    
+    
+    public ZaglavljeMT102(String idPoruke, String swiftKodBankeDuznika, String obracunskiRacunBankeDuznika,
+			String swiftKodBankePoverioca, String obracunskiRacunBankePoverioca, BigDecimal ukupanIznos,
+			String sifraValute, Date datumValute, Date datum) {
+		super();
+		this.idPoruke = idPoruke;
+		this.swiftKodBankeDuznika = swiftKodBankeDuznika;
+		this.obracunskiRacunBankeDuznika = obracunskiRacunBankeDuznika;
+		this.swiftKodBankePoverioca = swiftKodBankePoverioca;
+		this.obracunskiRacunBankePoverioca = obracunskiRacunBankePoverioca;
+		this.ukupanIznos = ukupanIznos;
+		this.sifraValute = sifraValute;
+		this.datumValute = datumValute;
+		this.datum = datum;
+	}
+    
+    
+
+	public Long getId() {
+		return id;
+	}
+
+
+
+	public ZaglavljeMT102() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+
+
+	/**
      * Gets the value of the idPoruke property.
      * 
      * @return
@@ -112,27 +154,27 @@ public class MT900 {
     }
 
     /**
-     * Gets the value of the swifKodBankeDuznika property.
+     * Gets the value of the swiftKodBankeDuznika property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getSwifKodBankeDuznika() {
-        return swifKodBankeDuznika;
+    public String getSwiftKodBankeDuznika() {
+        return swiftKodBankeDuznika;
     }
 
     /**
-     * Sets the value of the swifKodBankeDuznika property.
+     * Sets the value of the swiftKodBankeDuznika property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setSwifKodBankeDuznika(String value) {
-        this.swifKodBankeDuznika = value;
+    public void setSwiftKodBankeDuznika(String value) {
+        this.swiftKodBankeDuznika = value;
     }
 
     /**
@@ -160,27 +202,99 @@ public class MT900 {
     }
 
     /**
-     * Gets the value of the idPorukeNaloga property.
+     * Gets the value of the swiftKodBankePoverioca property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getIdPorukeNaloga() {
-        return idPorukeNaloga;
+    public String getSwiftKodBankePoverioca() {
+        return swiftKodBankePoverioca;
     }
 
     /**
-     * Sets the value of the idPorukeNaloga property.
+     * Sets the value of the swiftKodBankePoverioca property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setIdPorukeNaloga(String value) {
-        this.idPorukeNaloga = value;
+    public void setSwiftKodBankePoverioca(String value) {
+        this.swiftKodBankePoverioca = value;
+    }
+
+    /**
+     * Gets the value of the obracunskiRacunBankePoverioca property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getObracunskiRacunBankePoverioca() {
+        return obracunskiRacunBankePoverioca;
+    }
+
+    /**
+     * Sets the value of the obracunskiRacunBankePoverioca property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setObracunskiRacunBankePoverioca(String value) {
+        this.obracunskiRacunBankePoverioca = value;
+    }
+
+    /**
+     * Gets the value of the ukupanIznos property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link BigDecimal }
+     *     
+     */
+    public BigDecimal getUkupanIznos() {
+        return ukupanIznos;
+    }
+
+    /**
+     * Sets the value of the ukupanIznos property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link BigDecimal }
+     *     
+     */
+    public void setUkupanIznos(BigDecimal value) {
+        this.ukupanIznos = value;
+    }
+
+    /**
+     * Gets the value of the sifraValute property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getSifraValute() {
+        return sifraValute;
+    }
+
+    /**
+     * Sets the value of the sifraValute property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setSifraValute(String value) {
+        this.sifraValute = value;
     }
 
     /**
@@ -208,54 +322,27 @@ public class MT900 {
     }
 
     /**
-     * Gets the value of the iznos property.
+     * Gets the value of the datum property.
      * 
      * @return
      *     possible object is
-     *     {@link BigDecimal }
+     *     {@link Date }
      *     
      */
-    public BigDecimal getIznos() {
-        return iznos;
+    public Date getDatum() {
+        return datum;
     }
 
     /**
-     * Sets the value of the iznos property.
+     * Sets the value of the datum property.
      * 
      * @param value
      *     allowed object is
-     *     {@link BigDecimal }
+     *     {@link Date }
      *     
      */
-    public void setIznos(BigDecimal value) {
-        this.iznos = value;
+    public void setDatum(Date value) {
+        this.datum = value;
     }
 
-    /**
-     * Gets the value of the sifraValute property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getSifraValute() {
-        return sifraValute;
-    }
-
-    /**
-     * Sets the value of the sifraValute property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setSifraValute(String value) {
-        this.sifraValute = value;
-    }
-
-    public Long getId() {
-		return id;
-	}
 }

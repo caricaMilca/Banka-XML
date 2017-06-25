@@ -15,4 +15,6 @@ public interface RacunRepozitorijum extends JpaRepository<Racun, Long> {
 	Racun findByBrojRacuna(String brojRacuna);
 
 	Racun findByBrojRacunaAndBanka(String racunDuznika, Banka banka);
+
+	Racun findByObracunskiAndBanka(boolean b, Banka bankaDuznika);
 }

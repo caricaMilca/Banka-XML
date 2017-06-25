@@ -28,10 +28,6 @@ public class Racun {
 	public Boolean obracunski = false;
 	
 	public String valuta;
-	
-	public Double prometNaTeret;
-
-	public Double prometNaKorist;
 
 	public BigDecimal novoStanje;
 	

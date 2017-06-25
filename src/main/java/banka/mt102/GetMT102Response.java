@@ -6,7 +6,7 @@
 //
 
 
-package banka.mt900;
+package banka.mt102;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="MT900" type="{http://banka/mt900}MT900"/>
+ *         &lt;element name="MT102" type="{http://paket/mt102}MT102"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -36,36 +36,36 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "mt900"
+    "mt102"
 })
-@XmlRootElement(name = "GetMT900Response")
-public class GetMT900Response {
+@XmlRootElement(name = "getMT102Response")
+public class GetMT102Response {
 
-    @XmlElement(name = "MT900", required = true)
-    protected MT900 mt900;
+    @XmlElement(name = "MT102", required = true)
+    protected MT102 mt102;
 
     /**
-     * Gets the value of the mt900 property.
+     * Gets the value of the mt102 property.
      * 
      * @return
      *     possible object is
-     *     {@link MT900 }
+     *     {@link MT102 }
      *     
      */
-    public MT900 getMT900() {
-        return mt900;
+    public MT102 getMT102() {
+        return mt102;
     }
 
     /**
-     * Sets the value of the mt900 property.
+     * Sets the value of the mt102 property.
      * 
      * @param value
      *     allowed object is
-     *     {@link MT900 }
+     *     {@link MT102 }
      *     
      */
-    public void setMT900(MT900 value) {
-        this.mt900 = value;
+    public void setMT102(MT102 value) {
+        this.mt102 = value;
     }
 
 }

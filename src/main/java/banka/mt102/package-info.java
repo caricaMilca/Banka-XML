@@ -5,5 +5,5 @@
 // Generated on: 2017.06.25 at 11:15:05 PM CEST 
 //
 
-@javax.xml.bind.annotation.XmlSchema(namespace = "http://banka/mt900", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
-package banka.mt900;
+@javax.xml.bind.annotation.XmlSchema(namespace = "http://paket/mt102", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+package banka.mt102;

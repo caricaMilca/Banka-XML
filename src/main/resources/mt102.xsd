@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://paket/mt102" xmlns:rtgs="http://paket/mt102" xmlns:xsT="http://paket/tipovi" elementFormDefault="qualified">
+    <xs:import namespace="http://paket/tipovi"
+        schemaLocation="tipovi.xsd" />
+    
+    
+    
+    <xs:element name="getMT102Request">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="MT102" type="rtgs:MT102" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="getMT102Response">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="MT102" type="rtgs:MT102" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:complexType name="MT102">
+        
+        <xs:sequence>
+            <xs:element ref="rtgs:zaglavljeMT102" />
+            <xs:element ref="rtgs:pojedinacnoPlacanjeMT102" maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+    
+    
+    
+    <xs:element name="zaglavljeMT102" type="rtgs:ZaglavljeMT102">
+        
+    </xs:element>
+    
+    <xs:element name="pojedinacnoPlacanjeMT102" type="rtgs:PojedinacnoPlacanjeMT102">
+    </xs:element>
+    
+    <xs:complexType name="ZaglavljeMT102">
+        <xs:sequence>
+            <xs:element name="idPoruke" type="xsT:slovo50" />
+            <xs:element name="swiftKodBankeDuznika" type="xsT:slovo8" />
+            <xs:element name="obracunskiRacunBankeDuznika" type="xsT:slovo18" />
+            <xs:element name="swiftKodBankePoverioca" type="xsT:slovo8" />
+            <xs:element name="obracunskiRacunBankePoverioca" type="xsT:slovo18" />
+            <xs:element name="ukupanIznos" type="xsT:decimalni15-2" />
+            <xs:element name="sifraValute" type="xsT:slovo3" />
+            <xs:element name="datumValute" type="xs:date" />
+            <xs:element name="datum" type="xs:date" />
+        </xs:sequence>
+    </xs:complexType>
+    
+    
+    
+    
+    <xs:complexType name="PojedinacnoPlacanjeMT102">
+        <xs:sequence>
+            <xs:element name="idNalogaZaPlacanje" type="xsT:slovo50" />
+            <xs:element name="duznik" type="xsT:slovo255" />
+            <xs:element name="svrhaPlacanja" type="xsT:slovo255" />
+            <xs:element name="primalac" type="xsT:slovo255" />
+            <xs:element name="datumNaloga" type="xs:date" />
+            <xs:element name="racunDuznika" type="xsT:slovo18" />
+            <xs:element name="modelZaduzenja" type="xsT:broj2" />
+            <xs:element name="pozivNaBrojZaduzenja" type="xsT:slovo20" />
+            <xs:element name="racunPoverioca" type="xsT:slovo18" />
+            <xs:element name="modelOdobrenja" type="xsT:broj2" />
+            <xs:element name="pozivNaBrojOdobrenja" type="xsT:slovo20" />
+            <xs:element name="iznos" type="xsT:decimalni15-2" />
+            <xs:element name="sifraValute" type="xsT:slovo3" />
+            
+            
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

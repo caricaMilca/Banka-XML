@@ -1,31 +1,106 @@
 package banka.endpoint;
 
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
+import banka.model.Banka;
+import banka.model.Racun;
+import banka.mt103.GetMT103Request;
+import banka.mt103.MT103;
+import banka.mt900.GetMT900Response;
+import banka.mt900.MT900;
 import banka.nalog.GetNalogRequest;
 import banka.nalog.GetNalogResponse;
 import banka.nalog.Nalog;
+import banka.repozitorijumi.NalogRepozitorijum;
+import banka.repozitorijumi.RacunRepozitorijum;
 
 @Endpoint
 @Component
 public class BankaEndpoint {
 	private static final String NAMESPACE_URI = "http://paket/nalog";
 
+	@Autowired 
+	RacunRepozitorijum racunRep;
+	
+	@Autowired 
+	NalogRepozitorijum nalogRep;
+	
+	@Autowired
+	private WebServiceTemplate webServiceTemplate;
+	
+	
 	@PayloadRoot(namespace = NAMESPACE_URI, localPart = "getNalogRequest")
 	@ResponsePayload
 	public GetNalogResponse getNalog(@RequestPayload GetNalogRequest request) {
-		System.out.println("poslaliiii ++++++++++++++++++++++++++++++++++++++++++++");
-		Nalog n = request.getNalog();
-		if (n.isHitno()) {//rtgs, odmah narodnoj
+		
+		GetNalogResponse response = new GetNalogResponse();
+		Nalog nalog = request.getNalog();
+		Racun duznik = racunRep.findByBrojRacuna(nalog.getRacunDuznika());
+		Racun primalac = racunRep.findByBrojRacuna(nalog.getRacunPrimaoca());
+		Banka bankaDuznika = duznik.banka;
+		Banka bankaPrimaoca = primalac.banka;
+
+		
+		if(bankaDuznika.id.equals(bankaPrimaoca.id)){
+			nalogRep.save(nalog);
+			duznik.novoStanje = duznik.novoStanje.subtract(nalog.getIznos());
+			racunRep.save(duznik);
+			primalac.novoStanje = primalac.novoStanje.add(nalog.getIznos());
+			racunRep.save(primalac);
+		} else{
+			if (nalog.isHitno()) {  //rtgs
+				
+				MT103 mt103 = new MT103();
 			
-		} else {
-			
+				mt103.setIdPoruke((UUID.randomUUID().toString()));
+				mt103.setSwifKodBankeDuznika(bankaDuznika.swiftKod);
+				mt103.setObracunskiRacunBankeDuznika(bankaDuznika.obracunskiRacun.brojRacuna);
+				mt103.setSwiftKodBankePoverioca(bankaPrimaoca.swiftKod);
+				mt103.setObracunskiRacunBankePoverioca(bankaPrimaoca.obracunskiRacun.brojRacuna);
+				mt103.setDuznik(nalog.getDuznik());
+				mt103.setSvrhaPlacanja(nalog.getSvrhaPlacanja());
+				mt103.setPrimalac(nalog.getPrimalac());
+				mt103.setDatumNaloga(nalog.getDatumNaloga());
+				mt103.setDatumValute(nalog.getDatumValute());
+				mt103.setRacunDuznika(nalog.getRacunDuznika());
+				mt103.setModelZaduzenja(nalog.getModelZaduzenja());
+				mt103.setPozivNaBrojZaduzenja(nalog.getPozivNaBrojZaduzenja());
+				mt103.setRacunPoverioca(nalog.getRacunPrimaoca());
+				mt103.setModelOdobrenja(nalog.getModelOdobrenja());
+				mt103.setPozivNaBrojOdobrenja(nalog.getPozivNaBrojOdobrenja());
+				mt103.setIznos(nalog.getIznos());
+				mt103.setSifraValute(nalog.getOznakaValute());
+				
+				duznik.rezervisanaSredstva = duznik.rezervisanaSredstva.add(nalog.getIznos());
+				racunRep.save(duznik);
+				
+				GetMT103Request mt = new GetMT103Request();		
+				mt.setMT103(mt103);
+				String uri = "http://localhost:8083/ws";
+				webServiceTemplate.setDefaultUri(uri);
+				GetMT900Response mt900response = (GetMT900Response) webServiceTemplate.marshalSendAndReceive(mt);			
+				MT900 mt900 = mt900response.getMT900();
+				
+				duznik.rezervisanaSredstva = duznik.rezervisanaSredstva.subtract(mt900.getIznos());
+				duznik.novoStanje = duznik.novoStanje.subtract(mt900.getIznos());
+				
+			} else {
+				//clearing
+			}
 		}
-		return null;
+			
+		
+		
+		
+		return response;
 
 	}
 

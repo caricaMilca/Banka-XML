@@ -11,6 +11,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -42,6 +44,10 @@ public class Banka {
 	@Enumerated(EnumType.STRING)
 	public TipBanke tip;
 	
+	@ManyToOne
+	@JoinColumn(name = "OBRACUNSKI_ID")
+	public Racun obracunskiRacun;
+	
 	@XmlTransient
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "banka", cascade = CascadeType.ALL)
 	@JsonIgnore
@@ -52,4 +58,6 @@ public class Banka {
 		// TODO Auto-generated constructor stub
 	}
 
+	
+	
 }

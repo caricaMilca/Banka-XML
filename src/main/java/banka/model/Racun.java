@@ -1,5 +1,7 @@
 package banka.model;
 
+import java.math.BigDecimal;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -31,9 +33,9 @@ public class Racun {
 
 	public Double prometNaKorist;
 
-	public Double novoStanje;
+	public BigDecimal novoStanje;
 	
-	public Double rezervisanaSredstva;
+	public BigDecimal rezervisanaSredstva;
 	
 	public Racun() {
 		super();

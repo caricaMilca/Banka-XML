@@ -55,7 +55,8 @@ public class WebServisKonfiguracija extends WsConfigurerAdapter {
 	@Bean
 	public CommonsXsdSchemaCollection schemeCollection() {
 		CommonsXsdSchemaCollection collection = new CommonsXsdSchemaCollection(
-				new Resource[] {new ClassPathResource("/nalog.xsd")});
+				new Resource[] {new ClassPathResource("/nalog.xsd"),new ClassPathResource("/mt103.xsd"),new ClassPathResource("/mt900.xsd"),
+						new ClassPathResource("/mt910.xsd")});
 		collection.setInline(true);
 		return collection;
 	}
@@ -63,7 +64,7 @@ public class WebServisKonfiguracija extends WsConfigurerAdapter {
 	@Bean
 	Jaxb2Marshaller jaxb2Marshaller() {
 		Jaxb2Marshaller jaxb2Marshaller = new Jaxb2Marshaller();
-		jaxb2Marshaller.setContextPaths("banka.nalog");
+		jaxb2Marshaller.setContextPaths("banka.nalog", "banka.mt103", "banka.mt900", "banka.mt910");
 		return jaxb2Marshaller;
 	}
 

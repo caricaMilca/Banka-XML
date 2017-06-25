@@ -3,6 +3,8 @@ package banka.endpoint;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
@@ -19,6 +21,7 @@ import banka.mt900.MT900;
 import banka.nalog.GetNalogRequest;
 import banka.nalog.GetNalogResponse;
 import banka.nalog.Nalog;
+import banka.repozitorijumi.BankaRepozitorijum;
 import banka.repozitorijumi.NalogRepozitorijum;
 import banka.repozitorijumi.RacunRepozitorijum;
 
@@ -31,6 +34,9 @@ public class BankaEndpoint {
 	RacunRepozitorijum racunRep;
 	
 	@Autowired 
+	BankaRepozitorijum bankaRep;
+	
+	@Autowired 
 	NalogRepozitorijum nalogRep;
 	
 	@Autowired
@@ -39,23 +45,27 @@ public class BankaEndpoint {
 	
 	@PayloadRoot(namespace = NAMESPACE_URI, localPart = "getNalogRequest")
 	@ResponsePayload
-	public GetNalogResponse getNalog(@RequestPayload GetNalogRequest request) {
+	public ResponseEntity<GetNalogResponse> getNalog(@RequestPayload GetNalogRequest request) {
 		
 		GetNalogResponse response = new GetNalogResponse();
 		Nalog nalog = request.getNalog();
 		Racun duznik = racunRep.findByBrojRacuna(nalog.getRacunDuznika());
-		Racun primalac = racunRep.findByBrojRacuna(nalog.getRacunPrimaoca());
-		Banka bankaDuznika = duznik.banka;
-		Banka bankaPrimaoca = primalac.banka;
-
-		
-		if(bankaDuznika.id.equals(bankaPrimaoca.id)){
+		Racun primalac = racunRep.findByBrojRacunaAndBanka(nalog.getRacunPrimaoca(), duznik.banka);
+		String narodnaBankaPort = bankaRep.findByTip("NARODNA").port;
+		if(primalac != null){
 			nalogRep.save(nalog);
 			duznik.novoStanje = duznik.novoStanje.subtract(nalog.getIznos());
 			racunRep.save(duznik);
 			primalac.novoStanje = primalac.novoStanje.add(nalog.getIznos());
 			racunRep.save(primalac);
-		} else{
+			return new ResponseEntity<GetNalogResponse>(response, HttpStatus.ACCEPTED);
+		}
+		String banka3kodPrimalac = nalog.getRacunPrimaoca().substring(0, 3);
+		Banka bankaPrimaoca = bankaRep.findByBanka3kod(banka3kodPrimalac);
+		Banka bankaDuznika = duznik.banka;
+		if(bankaPrimaoca == null)
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		
 			if (nalog.isHitno()) {  //rtgs
 				
 				MT103 mt103 = new MT103();
@@ -84,7 +94,7 @@ public class BankaEndpoint {
 				
 				GetMT103Request mt = new GetMT103Request();		
 				mt.setMT103(mt103);
-				String uri = "http://localhost:8083/ws";
+				String uri = "http://localhost:" + narodnaBankaPort + "/ws";
 				webServiceTemplate.setDefaultUri(uri);
 				GetMT900Response mt900response = (GetMT900Response) webServiceTemplate.marshalSendAndReceive(mt);			
 				MT900 mt900 = mt900response.getMT900();
@@ -95,12 +105,8 @@ public class BankaEndpoint {
 			} else {
 				//clearing
 			}
-		}
-			
 		
-		
-		
-		return response;
+		return new ResponseEntity<>(HttpStatus.OK);
 
 	}
 

@@ -1,7 +1,9 @@
 package banka.endpoint;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,11 +35,13 @@ import banka.repozitorijumi.MT900Repozitorijum;
 import banka.repozitorijumi.NalogRepozitorijum;
 import banka.repozitorijumi.RacunRepozitorijum;
 import banka.repozitorijumi.ZaglavljeMT102Repozitorijum;
+import banka.zahtev.GetZahtevRequest;
 
 @Endpoint
 @Component
 public class BankaEndpoint {
 	private static final String NAMESPACE_URI = "http://paket/nalog";
+	private static final String NAMESPACE_URI2 = "http://paket/zahtev";
 
 	@Autowired
 	RacunRepozitorijum racunRep;
@@ -126,27 +130,26 @@ public class BankaEndpoint {
 			ZaglavljeMT102 zaglavljeMT102 = zaglavljeMT102Rep.findBySwiftKodBankePoverioca(bankaPrimaoca.swiftKod);
 			if (zaglavljeMT102 != null && !mt102Rep.findByZaglavljeMT102(zaglavljeMT102).isPoslata()) {
 				MT102 mt102 = mt102Rep.findByZaglavljeMT102(zaglavljeMT102);
-					mt102.getZaglavljeMT102().getUkupanIznos().add(nalog.getIznos());
-					PojedinacnoPlacanjeMT102 ppMT102 = new PojedinacnoPlacanjeMT102((UUID.randomUUID().toString()),
-							nalog.getDuznik(), nalog.getSvrhaPlacanja(), nalog.getPrimalac(), nalog.getDatumNaloga(),
-							nalog.getRacunDuznika(), nalog.getModelZaduzenja(), nalog.getPozivNaBrojZaduzenja(),
-							nalog.getRacunPrimaoca(), nalog.getModelOdobrenja(), nalog.getPozivNaBrojOdobrenja(),
-							nalog.getIznos(), nalog.getOznakaValute());
-					mt102.getPojedinacnoPlacanjeMT102().add(ppMT102);
-					duznik.rezervisanaSredstva = duznik.rezervisanaSredstva.add(nalog.getIznos());
-					racunRep.save(duznik);
-					if (mt102.getPojedinacnoPlacanjeMT102().size() == 2) {
-						GetMT102Request mtr = new GetMT102Request();
-						mtr.setMT102(mt102);
-						GetMT900Response mt900response = (GetMT900Response) webServiceTemplate
-								.marshalSendAndReceive(mtr);
-						MT900 mt900 = mt900response.getMT900();
-						mt900Rep.save(mt900);
-						duznik.rezervisanaSredstva = duznik.rezervisanaSredstva.subtract(mt900.getIznos());
-						duznik.novoStanje = duznik.novoStanje.subtract(mt900.getIznos());
-						mt102.setPoslata(true);
-					}
-					mt102Rep.save(mt102);
+				mt102.getZaglavljeMT102().getUkupanIznos().add(nalog.getIznos());
+				PojedinacnoPlacanjeMT102 ppMT102 = new PojedinacnoPlacanjeMT102((UUID.randomUUID().toString()),
+						nalog.getDuznik(), nalog.getSvrhaPlacanja(), nalog.getPrimalac(), nalog.getDatumNaloga(),
+						nalog.getRacunDuznika(), nalog.getModelZaduzenja(), nalog.getPozivNaBrojZaduzenja(),
+						nalog.getRacunPrimaoca(), nalog.getModelOdobrenja(), nalog.getPozivNaBrojOdobrenja(),
+						nalog.getIznos(), nalog.getOznakaValute());
+				mt102.getPojedinacnoPlacanjeMT102().add(ppMT102);
+				duznik.rezervisanaSredstva = duznik.rezervisanaSredstva.add(nalog.getIznos());
+				racunRep.save(duznik);
+				if (mt102.getPojedinacnoPlacanjeMT102().size() == 2) {
+					GetMT102Request mtr = new GetMT102Request();
+					mtr.setMT102(mt102);
+					GetMT900Response mt900response = (GetMT900Response) webServiceTemplate.marshalSendAndReceive(mtr);
+					MT900 mt900 = mt900response.getMT900();
+					mt900Rep.save(mt900);
+					duznik.rezervisanaSredstva = duznik.rezervisanaSredstva.subtract(mt900.getIznos());
+					duznik.novoStanje = duznik.novoStanje.subtract(mt900.getIznos());
+					mt102.setPoslata(true);
+				}
+				mt102Rep.save(mt102);
 
 			} else {
 				MT102 mt102 = new MT102();
@@ -173,4 +176,44 @@ public class BankaEndpoint {
 
 	}
 
+	int velicinaStranice = 4;
+/*
+	@PayloadRoot(namespace = NAMESPACE_URI2, localPart = "getZahtevRequest")
+	@ResponsePayload
+	public GetPresekResponse getZahtevRequest(@RequestPayload GetZahtevRequest request) {
+		System.out.println("asfas safas");
+
+		GetPresekResponse response = new GetPresekResponse();
+		Presek presek = new Presek();
+
+		Date datum = request.getZahtev().getDatumZahteva().toGregorianCalendar().getTime();
+		String brRacuna = request.getZahtev().getBrojRacuna();
+		int stranica = request.getZahtev().getRedniBrojPreseka().intValue();
+		Racun r = racunRep.findByBrojRacuna(request.getZahtev().getBrojRacuna());
+
+		Banka banka = r.banka;
+		// Banka banka = getCurrentBank(brRacuna);
+		List<Nalog> nalozi = getNalogeZaBankuDanIRacun(banka, datum, brRacuna);
+		List<Nalog> stranicaNaloga = null;
+
+		// ako nema za tu stranicu
+		int start = velicinaStranice * (stranica - 1);
+
+		if (nalozi.size() < start)
+			stranicaNaloga = new ArrayList<>();
+		else if (nalozi.size() < start + 4)
+			stranicaNaloga = nalozi.subList(start, nalozi.size());
+		else
+			stranicaNaloga = nalozi.subList(start, start + velicinaStranice);
+
+		for (int i = 0; i < stranicaNaloga.size(); i++) {
+			StavkaPreseka stavka = setStavkaNalogaIzNaloga(stranicaNaloga.get(i));
+			presek.getStavkaPreseka().add(stavka);
+		}
+		response.setPresek(presek);
+
+		System.out.println("aaaaaaaaaaaaaaa");
+		return response;
+	}
+*/
 }

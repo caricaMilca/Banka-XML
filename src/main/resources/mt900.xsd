@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-	targetNamespace="http://banka/mt900" xmlns:rtgs="http://banka/mt900" xmlns:xsT="http://paket/tipovi" elementFormDefault="qualified">
+	targetNamespace="http://paket/mt900" xmlns:rtgs="http://paket/mt900" xmlns:xsT="http://paket/tipovi" elementFormDefault="qualified">
 	<xs:import namespace="http://paket/tipovi"
 		schemaLocation="tipovi.xsd" />
 		

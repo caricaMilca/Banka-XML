@@ -65,7 +65,7 @@ public class MT102 {
     @ManyToOne
     protected ZaglavljeMT102 zaglavljeMT102;
     @XmlElement(required = true)
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     protected List<PojedinacnoPlacanjeMT102> pojedinacnoPlacanjeMT102;
 
     @XmlTransient

@@ -1,14 +1,11 @@
 package banka.endpoint;
 
 import java.sql.Date;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
@@ -18,6 +15,7 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import banka.model.Banka;
 import banka.model.Racun;
+import banka.model.TipBanke;
 import banka.mt102.GetMT102Request;
 import banka.mt102.MT102;
 import banka.mt102.PojedinacnoPlacanjeMT102;
@@ -35,7 +33,6 @@ import banka.repozitorijumi.MT900Repozitorijum;
 import banka.repozitorijumi.NalogRepozitorijum;
 import banka.repozitorijumi.RacunRepozitorijum;
 import banka.repozitorijumi.ZaglavljeMT102Repozitorijum;
-import banka.zahtev.GetZahtevRequest;
 
 @Endpoint
 @Component
@@ -66,30 +63,31 @@ public class BankaEndpoint {
 
 	@PayloadRoot(namespace = NAMESPACE_URI, localPart = "getNalogRequest")
 	@ResponsePayload
-	public ResponseEntity<GetNalogResponse> getNalog(@RequestPayload GetNalogRequest request) {
+	public GetNalogResponse getNalog(@RequestPayload GetNalogRequest request) {
 
 		GetNalogResponse response = new GetNalogResponse();
 		Nalog nalog = request.getNalog();
 		Racun duznik = racunRep.findByBrojRacuna(nalog.getRacunDuznika());
 		Racun primalac = racunRep.findByBrojRacunaAndBanka(nalog.getRacunPrimaoca(), duznik.banka);
-		String narodnaBankaPort = bankaRep.findByTip("NARODNA").port;
+		String narodnaBankaPort = bankaRep.findByTip(TipBanke.NARODNA).port;
 		if (primalac != null) {
 			nalogRep.save(nalog);
 			duznik.novoStanje = duznik.novoStanje.subtract(nalog.getIznos());
 			racunRep.save(duznik);
 			primalac.novoStanje = primalac.novoStanje.add(nalog.getIznos());
 			racunRep.save(primalac);
-			return new ResponseEntity<GetNalogResponse>(response, HttpStatus.ACCEPTED);
+			nalogRep.save(nalog);
+			return response;
 		}
 		String banka3kodPrimalac = nalog.getRacunPrimaoca().substring(0, 3);
 		Banka bankaPrimaoca = bankaRep.findByBanka3kod(banka3kodPrimalac);
 		Banka bankaDuznika = duznik.banka;
-		String obracunskiDuznik = racunRep.findByObracunskiAndBanka(true, bankaDuznika).brojRacuna;
-		String obracunskiPrimaoca = racunRep.findByObracunskiAndBanka(true, bankaPrimaoca).brojRacuna;
+		String obracunskiDuznik = racunRep.findByObracunskiAndBanka(true, bankaDuznika).get(0).brojRacuna;
+		String obracunskiPrimaoca = racunRep.findByObracunskiAndBanka(true, bankaPrimaoca).get(0).brojRacuna;
 
 		if (bankaPrimaoca == null
 				|| nalog.getIznos().compareTo(duznik.novoStanje.subtract(duznik.rezervisanaSredstva)) == 1)
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			return response;
 		String uri = "http://localhost:" + narodnaBankaPort + "/ws";
 		webServiceTemplate.setDefaultUri(uri);
 		if (nalog.isHitno()) { // rtgs
@@ -165,14 +163,15 @@ public class BankaEndpoint {
 						nalog.getOznakaValute(), nalog.getDatumNaloga(),
 						new Date(Calendar.getInstance().getTimeInMillis()));
 				mt102.setZaglavljeMT102(zm102);
+				zaglavljeMT102Rep.save(zm102);
 				mt102Rep.save(mt102);
 				duznik.rezervisanaSredstva = duznik.rezervisanaSredstva.add(nalog.getIznos());
 				racunRep.save(duznik);
 			}
-
+			nalogRep.save(nalog);
 		}
 
-		return new ResponseEntity<>(HttpStatus.OK);
+		return response;
 
 	}
 

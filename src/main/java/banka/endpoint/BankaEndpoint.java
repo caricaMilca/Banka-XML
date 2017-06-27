@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
+import org.jooq.util.derby.sys.Sys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.WebServiceTemplate;
@@ -119,10 +120,14 @@ public class BankaEndpoint {
 			GetMT103Request mt = new GetMT103Request();
 			mt.setMT103(mt103);
 			GetMT900Response mt900response = (GetMT900Response) webServiceTemplate.marshalSendAndReceive(mt);
-			MT900 mt900 = mt900response.getMT900();
-
-			duznik.rezervisanaSredstva = duznik.rezervisanaSredstva.subtract(mt900.getIznos());
-			duznik.novoStanje = duznik.novoStanje.subtract(mt900.getIznos());
+			if (mt900response == null)
+				System.out.println("ohhaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+			else {
+				MT900 mt900 = mt900response.getMT900();
+				duznik.rezervisanaSredstva = duznik.rezervisanaSredstva.subtract(mt900.getIznos());
+				duznik.novoStanje = duznik.novoStanje.subtract(mt900.getIznos());
+				System.out.println("NEuspjeloooooooooooooooooooooooooooooooooooooooooo");
+			}
 
 		} else {
 			ZaglavljeMT102 zaglavljeMT102 = zaglavljeMT102Rep.findBySwiftKodBankePoverioca(bankaPrimaoca.swiftKod);
@@ -176,43 +181,37 @@ public class BankaEndpoint {
 	}
 
 	int velicinaStranice = 4;
-/*
-	@PayloadRoot(namespace = NAMESPACE_URI2, localPart = "getZahtevRequest")
-	@ResponsePayload
-	public GetPresekResponse getZahtevRequest(@RequestPayload GetZahtevRequest request) {
-		System.out.println("asfas safas");
-
-		GetPresekResponse response = new GetPresekResponse();
-		Presek presek = new Presek();
-
-		Date datum = request.getZahtev().getDatumZahteva().toGregorianCalendar().getTime();
-		String brRacuna = request.getZahtev().getBrojRacuna();
-		int stranica = request.getZahtev().getRedniBrojPreseka().intValue();
-		Racun r = racunRep.findByBrojRacuna(request.getZahtev().getBrojRacuna());
-
-		Banka banka = r.banka;
-		// Banka banka = getCurrentBank(brRacuna);
-		List<Nalog> nalozi = getNalogeZaBankuDanIRacun(banka, datum, brRacuna);
-		List<Nalog> stranicaNaloga = null;
-
-		// ako nema za tu stranicu
-		int start = velicinaStranice * (stranica - 1);
-
-		if (nalozi.size() < start)
-			stranicaNaloga = new ArrayList<>();
-		else if (nalozi.size() < start + 4)
-			stranicaNaloga = nalozi.subList(start, nalozi.size());
-		else
-			stranicaNaloga = nalozi.subList(start, start + velicinaStranice);
-
-		for (int i = 0; i < stranicaNaloga.size(); i++) {
-			StavkaPreseka stavka = setStavkaNalogaIzNaloga(stranicaNaloga.get(i));
-			presek.getStavkaPreseka().add(stavka);
-		}
-		response.setPresek(presek);
-
-		System.out.println("aaaaaaaaaaaaaaa");
-		return response;
-	}
-*/
+	/*
+	 * @PayloadRoot(namespace = NAMESPACE_URI2, localPart = "getZahtevRequest")
+	 * 
+	 * @ResponsePayload public GetPresekResponse
+	 * getZahtevRequest(@RequestPayload GetZahtevRequest request) {
+	 * System.out.println("asfas safas");
+	 * 
+	 * GetPresekResponse response = new GetPresekResponse(); Presek presek = new
+	 * Presek();
+	 * 
+	 * Date datum =
+	 * request.getZahtev().getDatumZahteva().toGregorianCalendar().getTime();
+	 * String brRacuna = request.getZahtev().getBrojRacuna(); int stranica =
+	 * request.getZahtev().getRedniBrojPreseka().intValue(); Racun r =
+	 * racunRep.findByBrojRacuna(request.getZahtev().getBrojRacuna());
+	 * 
+	 * Banka banka = r.banka; // Banka banka = getCurrentBank(brRacuna);
+	 * List<Nalog> nalozi = getNalogeZaBankuDanIRacun(banka, datum, brRacuna);
+	 * List<Nalog> stranicaNaloga = null;
+	 * 
+	 * // ako nema za tu stranicu int start = velicinaStranice * (stranica - 1);
+	 * 
+	 * if (nalozi.size() < start) stranicaNaloga = new ArrayList<>(); else if
+	 * (nalozi.size() < start + 4) stranicaNaloga = nalozi.subList(start,
+	 * nalozi.size()); else stranicaNaloga = nalozi.subList(start, start +
+	 * velicinaStranice);
+	 * 
+	 * for (int i = 0; i < stranicaNaloga.size(); i++) { StavkaPreseka stavka =
+	 * setStavkaNalogaIzNaloga(stranicaNaloga.get(i));
+	 * presek.getStavkaPreseka().add(stavka); } response.setPresek(presek);
+	 * 
+	 * System.out.println("aaaaaaaaaaaaaaa"); return response; }
+	 */
 }

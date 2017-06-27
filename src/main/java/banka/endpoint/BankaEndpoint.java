@@ -144,47 +144,54 @@ public class BankaEndpoint {
 				MT900 mt900 = mt900response.getMT900();
 				duznik.rezervisanaSredstva = duznik.rezervisanaSredstva.subtract(mt900.getIznos());
 				duznik.novoStanje = duznik.novoStanje.subtract(mt900.getIznos());
-				System.out.println("NEuspjeloooooooooooooooooooooooooooooooooooooooooo");
+				racunRep.save(duznik);
+				System.out.println("uspjeloooooooooooooooooooooooooooooooooooooooooo");
 			}
 
 		} else {
 			ZaglavljeMT102 zaglavljeMT102 = zaglavljeMT102Rep.findBySwiftKodBankePoverioca(bankaPrimaoca.swiftKod);
-			if (zaglavljeMT102 != null
-					&& mt102Rep.findByZaglavljeMT102(zaglavljeMT102).getStatus().equals(MT102Status.NA_CEKANJU)) {
-				MT102 mt102 = mt102Rep.findByZaglavljeMT102(zaglavljeMT102);
-				mt102.getZaglavljeMT102().getUkupanIznos().add(nalog.getIznos());
-				PojedinacnoPlacanjeMT102 ppMT102 = new PojedinacnoPlacanjeMT102((UUID.randomUUID().toString()),
-						nalog.getDuznik(), nalog.getSvrhaPlacanja(), nalog.getPrimalac(), nalog.getDatumNaloga(),
-						nalog.getRacunDuznika(), nalog.getModelZaduzenja(), nalog.getPozivNaBrojZaduzenja(),
-						nalog.getRacunPrimaoca(), nalog.getModelOdobrenja(), nalog.getPozivNaBrojOdobrenja(),
-						nalog.getIznos(), nalog.getOznakaValute());
-				mt102.getPojedinacnoPlacanjeMT102().add(ppMT102);
-				duznik.rezervisanaSredstva = duznik.rezervisanaSredstva.add(nalog.getIznos());
-				racunRep.save(duznik);
-				if (mt102.getPojedinacnoPlacanjeMT102().size() == 2) {
-					GetMT102Request mtr = new GetMT102Request();
-					mtr.setMT102(mt102);
-					GetMT900Response mt900response = (GetMT900Response) webServiceTemplate.marshalSendAndReceive(mtr);
-					if (mt900response == null)
-						System.out.println("ohhaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-					else {
-						MT900 mt900 = mt900response.getMT900(); // napravi za
-																// listu
-						mt900Rep.save(mt900);
-						List<PojedinacnoPlacanjeMT102> placanja = mt102.getPojedinacnoPlacanjeMT102();
-						for (PojedinacnoPlacanjeMT102 p : placanja) {
-							Racun duznika = racunRep.findByBrojRacuna(p.getRacunDuznika());
-							duznika.rezervisanaSredstva = duznika.rezervisanaSredstva.subtract(mt900.getIznos());
-							duznika.novoStanje = duznika.novoStanje.subtract(mt900.getIznos());
-							racunRep.save(duznika);
+			boolean udji = false;
+			if (zaglavljeMT102 != null) {
+				udji = true;
+				if (mt102Rep.findByZaglavljeMT102(zaglavljeMT102).getStatus().equals(MT102Status.NA_CEKANJU)) {
+					udji = true;
+					MT102 mt102 = mt102Rep.findByZaglavljeMT102(zaglavljeMT102);
+					mt102.getZaglavljeMT102().getUkupanIznos().add(nalog.getIznos());
+					PojedinacnoPlacanjeMT102 ppMT102 = new PojedinacnoPlacanjeMT102((UUID.randomUUID().toString()),
+							nalog.getDuznik(), nalog.getSvrhaPlacanja(), nalog.getPrimalac(), nalog.getDatumNaloga(),
+							nalog.getRacunDuznika(), nalog.getModelZaduzenja(), nalog.getPozivNaBrojZaduzenja(),
+							nalog.getRacunPrimaoca(), nalog.getModelOdobrenja(), nalog.getPozivNaBrojOdobrenja(),
+							nalog.getIznos(), nalog.getOznakaValute());
+					mt102.getPojedinacnoPlacanjeMT102().add(ppMT102);
+					duznik.rezervisanaSredstva = duznik.rezervisanaSredstva.add(nalog.getIznos());
+					racunRep.save(duznik);
+					if (mt102.getPojedinacnoPlacanjeMT102().size() == 2) {
+						GetMT102Request mtr = new GetMT102Request();
+						mtr.setMT102(mt102);
+						GetMT900Response mt900response = (GetMT900Response) webServiceTemplate
+								.marshalSendAndReceive(mtr);
+						if (mt900response == null)
+							System.out.println("ohhaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+						else {
+							MT900 mt900 = mt900response.getMT900(); // napravi
+																	// za
+																	// listu
+							mt900Rep.save(mt900);
+							List<PojedinacnoPlacanjeMT102> placanja = mt102.getPojedinacnoPlacanjeMT102();
+							for (PojedinacnoPlacanjeMT102 p : placanja) {
+								Racun duznika = racunRep.findByBrojRacuna(p.getRacunDuznika());
+								duznika.rezervisanaSredstva = duznika.rezervisanaSredstva.subtract(p.getIznos());
+								duznika.novoStanje = duznika.novoStanje.subtract(p.getIznos());
+								racunRep.save(duznika);
+							}
+
+							mt102.setStatus(MT102Status.POSLATA);
 						}
-
-						mt102.setStatus(MT102Status.POSLATA);
 					}
+					mt102Rep.save(mt102);
 				}
-				mt102Rep.save(mt102);
-
-			} else {
+			}
+			if (!udji) {
 				MT102 mt102 = new MT102();
 				mt102.setStatus(MT102Status.NA_CEKANJU);
 				PojedinacnoPlacanjeMT102 ppMT102 = new PojedinacnoPlacanjeMT102((UUID.randomUUID().toString()),

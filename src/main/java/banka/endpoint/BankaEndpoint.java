@@ -236,7 +236,45 @@ public class BankaEndpoint {
 		return stavka;
 	}
 
-	private List<Nalog> getNalogeZaBankuDanIRacun(Banka banka, Date datum, String brRacuna) {
+	private StavkaPreseka setStavka103Iz103(MT103 nalog) {
+		StavkaPreseka stavka = new StavkaPreseka();
+		stavka.setPozivNaBrojOdobrenja(nalog.getPozivNaBrojOdobrenja());
+		stavka.setPozivNaBrojZaduzenja(nalog.getPozivNaBrojZaduzenja());
+		stavka.setPrimalac(nalog.getPrimalac());
+		stavka.setRacunDuznika(nalog.getRacunDuznika());
+		stavka.setRacunPrimaoca(nalog.getRacunPoverioca());
+		stavka.setSvrhaPlacanja(nalog.getSvrhaPlacanja());
+		stavka.setModelOdobrenja(nalog.getModelOdobrenja());
+		stavka.setModelZaduzenja(nalog.getModelZaduzenja());
+		stavka.setPozivNaBrojOdobrenja(nalog.getPozivNaBrojOdobrenja());
+		stavka.setPozivNaBrojZaduzenja(nalog.getPozivNaBrojZaduzenja());
+		stavka.setIznos(nalog.getIznos());
+		stavka.setDuznik(nalog.getDuznik());
+		stavka.setDatumValute(nalog.getDatumValute());
+		stavka.setDatumNaloga(nalog.getDatumNaloga());
+		return stavka;
+	}
+
+	private StavkaPreseka setStavka102Iz102(PojedinacnoPlacanjeMT102 nalog) {
+		StavkaPreseka stavka = new StavkaPreseka();
+		stavka.setPozivNaBrojOdobrenja(nalog.getPozivNaBrojOdobrenja());
+		stavka.setPozivNaBrojZaduzenja(nalog.getPozivNaBrojZaduzenja());
+		stavka.setPrimalac(nalog.getPrimalac());
+		stavka.setRacunDuznika(nalog.getRacunDuznika());
+		stavka.setRacunPrimaoca(nalog.getRacunPoverioca());
+		stavka.setSvrhaPlacanja(nalog.getSvrhaPlacanja());
+		stavka.setModelOdobrenja(nalog.getModelOdobrenja());
+		stavka.setModelZaduzenja(nalog.getModelZaduzenja());
+		stavka.setPozivNaBrojOdobrenja(nalog.getPozivNaBrojOdobrenja());
+		stavka.setPozivNaBrojZaduzenja(nalog.getPozivNaBrojZaduzenja());
+		stavka.setIznos(nalog.getIznos());
+		stavka.setDuznik(nalog.getDuznik());
+		stavka.setDatumValute(nalog.getDatumNaloga());
+		stavka.setDatumNaloga(nalog.getDatumNaloga());
+		return stavka;
+	}
+
+	private List<Nalog> getNalogeZaBankuDanIRacun(Date datum, String brRacuna) {
 		List<Nalog> nalozi = new ArrayList<Nalog>();
 		List<Nalog> naloziUBazi = nalogRep.findByracunDuznika(brRacuna);
 		for (Nalog nalogUBazi : naloziUBazi) {
@@ -245,6 +283,34 @@ public class BankaEndpoint {
 			}
 		}
 		return nalozi;
+	}
+
+	private List<MT103> getFrom103(Date datum, String brRacuna) {
+		System.out.println("tretretretretretre");
+		List<MT103> mt = new ArrayList<MT103>();
+		List<MT103> MTUBazi = mt103Rep.findByracunPoverioca(brRacuna);
+		for (MT103 mt103 : MTUBazi) {
+			if (mt103.getDatumNaloga().compareTo(datum) == 0) {
+				mt.add(mt103);
+			}
+		}
+		return mt;
+	}
+
+	private List<PojedinacnoPlacanjeMT102> getFrom102(Date datum, String brRacuna) {
+		System.out.println("krekrekrekrekrekrekrekre");
+		List<PojedinacnoPlacanjeMT102> mt = new ArrayList<PojedinacnoPlacanjeMT102>();
+		List<MT102> MT2UBazi = mt102Rep.findAll();
+		for (int i = 0; i < MT2UBazi.size(); i++) {
+			for (int j = 0; j < MT2UBazi.get(i).getPojedinacnoPlacanjeMT102().size(); j++) {
+				if (MT2UBazi.get(i).getPojedinacnoPlacanjeMT102().get(j).getRacunPoverioca().equals(brRacuna)) {
+					if (MT2UBazi.get(i).getPojedinacnoPlacanjeMT102().get(j).getDatumNaloga().compareTo(datum) == 0) {
+						mt.add(MT2UBazi.get(i).getPojedinacnoPlacanjeMT102().get(j));
+					}
+				}
+			}
+		}
+		return mt;
 	}
 
 	int velicinaStranice = 4;
@@ -260,33 +326,48 @@ public class BankaEndpoint {
 		Date datum = request.getZahtev().getDatumZahteva();
 		String brRacuna = request.getZahtev().getBrojRacuna();
 		int stranica = request.getZahtev().getRedniBrojPreseka().intValue();
-		Racun r = racunRep.findByBrojRacuna(request.getZahtev().getBrojRacuna());
-
-		Banka banka = r.banka;
-		// Banka banka = getCurrentBank(brRacuna);
-
-		List<Nalog> nalozi = getNalogeZaBankuDanIRacun(banka, datum, brRacuna);
-
-		List<Nalog> stranicaNaloga = null;
-
+		List<Nalog> nalozi = getNalogeZaBankuDanIRacun(datum, brRacuna);
+		List<MT103> mt103 = getFrom103(datum, brRacuna);
+		List<PojedinacnoPlacanjeMT102> mt102 = getFrom102(datum, brRacuna);
+		List<StavkaPreseka> stranicaStavki = new ArrayList<StavkaPreseka>();
+		List<StavkaPreseka> spreseci = new ArrayList<StavkaPreseka>();
 		// ako nema za tu stranicu
 		int start = velicinaStranice * (stranica - 1);
+        System.out.println("mililililiilililililililil");
+		for (int i = 0; i < nalozi.size(); i++) {
+			StavkaPreseka stavka = setStavkaNalogaIzNaloga(nalozi.get(i));
+			spreseci.add(stavka);
+		}
 
-		if (nalozi.size() < start)
-			stranicaNaloga = new ArrayList<>();
-		else if (nalozi.size() < start + 4) // ako na stranici nema tacno 4
-			stranicaNaloga = nalozi.subList(start, nalozi.size());
+		for (int i = 0; i < mt103.size(); i++) {
+			StavkaPreseka stavka = setStavka103Iz103(mt103.get(i));
+			spreseci.add(stavka);
+		}
+
+		for (int i = 0; i < mt102.size(); i++) {
+			StavkaPreseka stavka = setStavka102Iz102(mt102.get(i));
+			spreseci.add(stavka);
+		}
+
+		if (spreseci.size() < start)
+			stranicaStavki = new ArrayList<>();
+		else if (spreseci.size() < start + 4) // ako na
+																// stranici nema
+																// tacno 4
+			stranicaStavki = spreseci.subList(start, spreseci.size());
 		else // ako je normalno
-			stranicaNaloga = nalozi.subList(start, start + velicinaStranice);
+			stranicaStavki = spreseci.subList(start, start + velicinaStranice);
 
-		for (int i = 0; i < stranicaNaloga.size(); i++) {
-			StavkaPreseka stavka = setStavkaNalogaIzNaloga(stranicaNaloga.get(i));
-			presek.getStavkaPreseka().add(stavka);
+        presek.getStavkaPreseka().addAll(stranicaStavki);
+/*
+		for (int i = 0; i < stranicaStavki.size(); i++) {
+			presek.getStavkaPreseka().add(stranicaStavki.get(i));
+			System.out.println(stranicaStavki.get(i).getIznos());
 		}
+		*/
+        System.out.println("stigaoje");
 		response.setPresek(presek);
-		for (int i = 0; i < response.getPresek().getStavkaPreseka().size(); i++) {
-			System.out.println(response.getPresek().getStavkaPreseka().get(i).getModelZaduzenja());
-		}
+
 		return response;
 
 	}

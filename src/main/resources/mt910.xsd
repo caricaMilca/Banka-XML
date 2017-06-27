@@ -4,7 +4,7 @@
 	<xs:import namespace="http://paket/tipovi"
 		schemaLocation="tipovi.xsd" />
 		
-	<xs:element name="GetMT910Response">
+	<xs:element name="GetMT910Request">
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="MT900" type="rtgs:MT910" />

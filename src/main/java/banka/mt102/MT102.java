@@ -14,6 +14,8 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -69,7 +71,8 @@ public class MT102 {
     protected List<PojedinacnoPlacanjeMT102> pojedinacnoPlacanjeMT102;
 
     @XmlTransient
-    protected boolean poslata;
+    @Enumerated(EnumType.STRING)
+    protected MT102Status status;
     /**
      * Gets the value of the zaglavljeMT102 property.
      * 
@@ -93,14 +96,6 @@ public class MT102 {
     public void setZaglavljeMT102(ZaglavljeMT102 value) {
         this.zaglavljeMT102 = value;
     }
-
-    public boolean isPoslata() {
-		return poslata;
-	}
-
-	public void setPoslata(boolean poslata) {
-		this.poslata = poslata;
-	}
 
 	/**
      * Gets the value of the pojedinacnoPlacanjeMT102 property.
@@ -130,6 +125,14 @@ public class MT102 {
         }
         return this.pojedinacnoPlacanjeMT102;
     }
+
+	public MT102Status getStatus() {
+		return status;
+	}
+
+	public void setStatus(MT102Status status) {
+		this.status = status;
+	}
 
 	public Long getId() {
 		return id;

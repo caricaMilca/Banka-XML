@@ -5,7 +5,6 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
-import org.jooq.util.derby.sys.Sys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.WebServiceTemplate;
@@ -19,18 +18,23 @@ import banka.model.Racun;
 import banka.model.TipBanke;
 import banka.mt102.GetMT102Request;
 import banka.mt102.MT102;
+import banka.mt102.MT102Status;
 import banka.mt102.PojedinacnoPlacanjeMT102;
 import banka.mt102.ZaglavljeMT102;
 import banka.mt103.GetMT103Request;
 import banka.mt103.MT103;
 import banka.mt900.GetMT900Response;
 import banka.mt900.MT900;
+import banka.mt910.GetMT910Request;
+import banka.mt910.MT910;
 import banka.nalog.GetNalogRequest;
 import banka.nalog.GetNalogResponse;
 import banka.nalog.Nalog;
 import banka.repozitorijumi.BankaRepozitorijum;
 import banka.repozitorijumi.MT102Repozitorijum;
+import banka.repozitorijumi.MT103Repozitorijum;
 import banka.repozitorijumi.MT900Repozitorijum;
+import banka.repozitorijumi.MT910Repozitorijum;
 import banka.repozitorijumi.NalogRepozitorijum;
 import banka.repozitorijumi.RacunRepozitorijum;
 import banka.repozitorijumi.ZaglavljeMT102Repozitorijum;
@@ -40,6 +44,10 @@ import banka.repozitorijumi.ZaglavljeMT102Repozitorijum;
 public class BankaEndpoint {
 	private static final String NAMESPACE_URI = "http://paket/nalog";
 	private static final String NAMESPACE_URI2 = "http://paket/zahtev";
+	private static final String NAMESPACE_URI3 = "http://paket/mt103";
+	private static final String NAMESPACE_URI4 = "http://paket/mt102";
+	private static final String NAMESPACE_URI5 = "http://paket/mt910";
+
 
 	@Autowired
 	RacunRepozitorijum racunRep;
@@ -58,7 +66,13 @@ public class BankaEndpoint {
 
 	@Autowired
 	MT900Repozitorijum mt900Rep;
+	
+	@Autowired
+	MT910Repozitorijum mt910Rep;
 
+	@Autowired
+	MT103Repozitorijum mt103Rep;
+	
 	@Autowired
 	private WebServiceTemplate webServiceTemplate;
 
@@ -131,7 +145,7 @@ public class BankaEndpoint {
 
 		} else {
 			ZaglavljeMT102 zaglavljeMT102 = zaglavljeMT102Rep.findBySwiftKodBankePoverioca(bankaPrimaoca.swiftKod);
-			if (zaglavljeMT102 != null && !mt102Rep.findByZaglavljeMT102(zaglavljeMT102).isPoslata()) {
+			if (zaglavljeMT102 != null && mt102Rep.findByZaglavljeMT102(zaglavljeMT102).getStatus().equals(MT102Status.NA_CEKANJU)) {
 				MT102 mt102 = mt102Rep.findByZaglavljeMT102(zaglavljeMT102);
 				mt102.getZaglavljeMT102().getUkupanIznos().add(nalog.getIznos());
 				PojedinacnoPlacanjeMT102 ppMT102 = new PojedinacnoPlacanjeMT102((UUID.randomUUID().toString()),
@@ -146,17 +160,27 @@ public class BankaEndpoint {
 					GetMT102Request mtr = new GetMT102Request();
 					mtr.setMT102(mt102);
 					GetMT900Response mt900response = (GetMT900Response) webServiceTemplate.marshalSendAndReceive(mtr);
-					MT900 mt900 = mt900response.getMT900();
+					if (mt900response == null)
+						System.out.println("ohhaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+					else {
+					MT900 mt900 = mt900response.getMT900(); // napravi za listu
 					mt900Rep.save(mt900);
-					duznik.rezervisanaSredstva = duznik.rezervisanaSredstva.subtract(mt900.getIznos());
-					duznik.novoStanje = duznik.novoStanje.subtract(mt900.getIznos());
-					mt102.setPoslata(true);
+					List<PojedinacnoPlacanjeMT102> placanja = mt102.getPojedinacnoPlacanjeMT102();
+					for(PojedinacnoPlacanjeMT102 p : placanja){
+						Racun duznika = racunRep.findByBrojRacuna(p.getRacunDuznika());
+						duznika.rezervisanaSredstva = duznika.rezervisanaSredstva.subtract(mt900.getIznos());
+						duznika.novoStanje = duznika.novoStanje.subtract(mt900.getIznos());
+						racunRep.save(duznika);
+					}
+					
+						mt102.setStatus(MT102Status.POSLATA);
+					}
 				}
 				mt102Rep.save(mt102);
 
 			} else {
 				MT102 mt102 = new MT102();
-				mt102.setPoslata(false);
+				mt102.setStatus(MT102Status.NA_CEKANJU);
 				PojedinacnoPlacanjeMT102 ppMT102 = new PojedinacnoPlacanjeMT102((UUID.randomUUID().toString()),
 						nalog.getDuznik(), nalog.getSvrhaPlacanja(), nalog.getPrimalac(), nalog.getDatumNaloga(),
 						nalog.getRacunDuznika(), nalog.getModelZaduzenja(), nalog.getPozivNaBrojZaduzenja(),
@@ -179,7 +203,42 @@ public class BankaEndpoint {
 		return response;
 
 	}
-
+	
+	@PayloadRoot(namespace = NAMESPACE_URI5, localPart = "GetMT910Request")
+	@ResponsePayload
+	public void getUplata(@RequestPayload GetMT910Request request) {
+		MT910 mt910 = request.getMT900();
+		mt910Rep.save(mt910);
+		System.out.println(" mt910   mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm");
+	}
+	
+	@PayloadRoot(namespace = NAMESPACE_URI3, localPart = "GetMT103Request")
+	@ResponsePayload
+	public void getMT103(@RequestPayload GetMT103Request request) {
+		MT103 mt103 = request.getMT103();
+		Racun racunPrimaoca = racunRep.findByBrojRacuna(mt103.getRacunPoverioca());
+		racunPrimaoca.novoStanje = racunPrimaoca.novoStanje.add(mt103.getIznos());
+		racunRep.save(racunPrimaoca);
+		mt103Rep.save(mt103);
+		System.out.println(" sacuvao mt103            aaaaaaaaaa");
+	}
+	
+	@PayloadRoot(namespace = NAMESPACE_URI4, localPart = "getMT102Request")
+	@ResponsePayload
+	public void getMT102(@RequestPayload GetMT102Request request) {
+		MT102 mt102 = request.getMT102();
+		zaglavljeMT102Rep.save(mt102.getZaglavljeMT102());
+		List<PojedinacnoPlacanjeMT102> placanja = mt102.getPojedinacnoPlacanjeMT102();
+		for(PojedinacnoPlacanjeMT102 p : placanja){
+			Racun primaoca = racunRep.findByBrojRacuna(p.getRacunPoverioca());
+			primaoca.novoStanje = primaoca.novoStanje.add(p.getIznos());
+			racunRep.save(primaoca);
+		}
+		mt102.setStatus(MT102Status.PRIMLJENA);
+		mt102Rep.save(mt102);
+		System.out.println(" sacuva mt102 aaaaaaaaaaaaaaaaaaaaaaa");
+		
+	}
 	int velicinaStranice = 4;
 	/*
 	 * @PayloadRoot(namespace = NAMESPACE_URI2, localPart = "getZahtevRequest")

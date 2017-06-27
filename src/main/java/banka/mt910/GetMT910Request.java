@@ -38,8 +38,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "", propOrder = {
     "mt900"
 })
-@XmlRootElement(name = "GetMT910Response")
-public class GetMT910Response {
+@XmlRootElement(name = "GetMT910Request")
+public class GetMT910Request {
 
     @XmlElement(name = "MT900", required = true)
     protected MT910 mt900;

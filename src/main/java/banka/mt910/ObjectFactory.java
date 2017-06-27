@@ -37,11 +37,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link GetMT910Response }
+     * Create an instance of {@link GetMT910Request }
      * 
      */
-    public GetMT910Response createGetMT910Response() {
-        return new GetMT910Response();
+    public GetMT910Request createGetMT910Response() {
+        return new GetMT910Request();
     }
 
     /**

@@ -56,7 +56,7 @@ public class WebServisKonfiguracija extends WsConfigurerAdapter {
 	public CommonsXsdSchemaCollection schemeCollection() {
 		CommonsXsdSchemaCollection collection = new CommonsXsdSchemaCollection(
 				new Resource[] {new ClassPathResource("/nalog.xsd"),new ClassPathResource("/mt103.xsd"),new ClassPathResource("/mt900.xsd"),
-						new ClassPathResource("/mt910.xsd"), new ClassPathResource("/mt102.xsd")});
+						new ClassPathResource("/mt910.xsd"), new ClassPathResource("/mt102.xsd"), new ClassPathResource("/zahtev.xsd")});
 		collection.setInline(true);
 		return collection;
 	}
@@ -64,7 +64,7 @@ public class WebServisKonfiguracija extends WsConfigurerAdapter {
 	@Bean
 	Jaxb2Marshaller jaxb2Marshaller() {
 		Jaxb2Marshaller jaxb2Marshaller = new Jaxb2Marshaller();
-		jaxb2Marshaller.setContextPaths("banka.nalog", "banka.mt103", "banka.mt900", "banka.mt910", "banka.mt102");
+		jaxb2Marshaller.setContextPaths("banka.nalog", "banka.mt103", "banka.mt900", "banka.mt910", "banka.mt102","banka.zahtev");
 		return jaxb2Marshaller;
 	}
 
@@ -83,5 +83,11 @@ public class WebServisKonfiguracija extends WsConfigurerAdapter {
 	@Qualifier("nalog")
 	public XsdSchema nalog() {
 		return new SimpleXsdSchema(new ClassPathResource("nalog.xsd"));
+	}
+	
+	@Bean
+	@Qualifier("zahtev")
+	public XsdSchema zahtev() {
+		return new SimpleXsdSchema(new ClassPathResource("zahtev.xsd"));
 	}
 }

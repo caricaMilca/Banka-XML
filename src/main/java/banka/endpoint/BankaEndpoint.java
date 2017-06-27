@@ -1,6 +1,7 @@
 package banka.endpoint;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
@@ -27,12 +28,16 @@ import banka.mt900.MT900;
 import banka.nalog.GetNalogRequest;
 import banka.nalog.GetNalogResponse;
 import banka.nalog.Nalog;
+import banka.presek.GetPresekResponse;
+import banka.presek.Presek;
+import banka.presek.StavkaPreseka;
 import banka.repozitorijumi.BankaRepozitorijum;
 import banka.repozitorijumi.MT102Repozitorijum;
 import banka.repozitorijumi.MT900Repozitorijum;
 import banka.repozitorijumi.NalogRepozitorijum;
 import banka.repozitorijumi.RacunRepozitorijum;
 import banka.repozitorijumi.ZaglavljeMT102Repozitorijum;
+import banka.zahtev.GetZahtevRequest;
 
 @Endpoint
 @Component
@@ -175,8 +180,38 @@ public class BankaEndpoint {
 
 	}
 
+	private StavkaPreseka setStavkaNalogaIzNaloga(Nalog nalog) {
+		StavkaPreseka stavka = new StavkaPreseka();
+		stavka.setPozivNaBrojOdobrenja(nalog.getPozivNaBrojOdobrenja());
+		stavka.setPozivNaBrojZaduzenja(nalog.getPozivNaBrojZaduzenja());
+		stavka.setPrimalac(nalog.getPrimalac());
+		stavka.setRacunDuznika(nalog.getRacunDuznika());
+		stavka.setRacunPrimaoca(nalog.getRacunPrimaoca());
+		stavka.setSvrhaPlacanja(nalog.getSvrhaPlacanja());
+		stavka.setModelOdobrenja(nalog.getModelOdobrenja());
+		stavka.setModelZaduzenja(nalog.getModelZaduzenja());
+		stavka.setPozivNaBrojOdobrenja(nalog.getPozivNaBrojOdobrenja());
+		stavka.setPozivNaBrojZaduzenja(nalog.getPozivNaBrojZaduzenja());
+		stavka.setIznos(nalog.getIznos());
+		stavka.setDuznik(nalog.getDuznik());
+		stavka.setDatumValute(nalog.getDatumValute());
+		stavka.setDatumNaloga(nalog.getDatumNaloga());
+		return stavka;
+	}
+	
+	private List<Nalog> getNalogeZaBankuDanIRacun(Banka banka, Date datum, String brRacuna) {
+		List<Nalog> nalozi = new ArrayList<Nalog>();
+		List<Nalog> naloziUBazi = nalogRep.findByracunDuznika(brRacuna);
+		for (Nalog nalogUBazi : naloziUBazi) {
+			if (nalogUBazi.getDatumNaloga().compareTo(datum) == 0) {
+				nalozi.add(nalogUBazi);
+				}
+		}
+		return nalozi;
+	}
+	
 	int velicinaStranice = 4;
-/*
+
 	@PayloadRoot(namespace = NAMESPACE_URI2, localPart = "getZahtevRequest")
 	@ResponsePayload
 	public GetPresekResponse getZahtevRequest(@RequestPayload GetZahtevRequest request) {
@@ -185,14 +220,16 @@ public class BankaEndpoint {
 		GetPresekResponse response = new GetPresekResponse();
 		Presek presek = new Presek();
 
-		Date datum = request.getZahtev().getDatumZahteva().toGregorianCalendar().getTime();
+		Date datum = request.getZahtev().getDatumZahteva();
 		String brRacuna = request.getZahtev().getBrojRacuna();
 		int stranica = request.getZahtev().getRedniBrojPreseka().intValue();
 		Racun r = racunRep.findByBrojRacuna(request.getZahtev().getBrojRacuna());
 
 		Banka banka = r.banka;
 		// Banka banka = getCurrentBank(brRacuna);
+	
 		List<Nalog> nalozi = getNalogeZaBankuDanIRacun(banka, datum, brRacuna);
+		
 		List<Nalog> stranicaNaloga = null;
 
 		// ako nema za tu stranicu
@@ -200,9 +237,9 @@ public class BankaEndpoint {
 
 		if (nalozi.size() < start)
 			stranicaNaloga = new ArrayList<>();
-		else if (nalozi.size() < start + 4)
+		else if (nalozi.size() < start + 4) //ako na stranici nema tacno 4
 			stranicaNaloga = nalozi.subList(start, nalozi.size());
-		else
+		else //ako je normalno
 			stranicaNaloga = nalozi.subList(start, start + velicinaStranice);
 
 		for (int i = 0; i < stranicaNaloga.size(); i++) {
@@ -210,9 +247,12 @@ public class BankaEndpoint {
 			presek.getStavkaPreseka().add(stavka);
 		}
 		response.setPresek(presek);
-
-		System.out.println("aaaaaaaaaaaaaaa");
+        for(int i = 0;i<response.getPresek().getStavkaPreseka().size(); i++){
+		System.out.println(response.getPresek().getStavkaPreseka().get(i).getModelZaduzenja());
+        }
 		return response;
+
+		
 	}
-*/
+
 }

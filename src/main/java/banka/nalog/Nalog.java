@@ -61,7 +61,7 @@ import xmlTransformacije.Adapter1;
  * 
  * 
  */
-@Entity
+
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "nalog", propOrder = {
     "idPoruke",
@@ -80,6 +80,7 @@ import xmlTransformacije.Adapter1;
     "oznakaValute",
     "hitno"
 })
+@Entity
 public class Nalog {
 	
 	@XmlTransient

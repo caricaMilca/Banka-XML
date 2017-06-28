@@ -1,5 +1,7 @@
 package banka.endpoint;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -34,6 +36,7 @@ import banka.nalog.Nalog;
 import banka.presek.GetPresekResponse;
 import banka.presek.Presek;
 import banka.presek.StavkaPreseka;
+import banka.presek.ZaglavljePreseka;
 import banka.repozitorijumi.BankaRepozitorijum;
 import banka.repozitorijumi.MT102Repozitorijum;
 import banka.repozitorijumi.MT103Repozitorijum;
@@ -257,6 +260,7 @@ public class BankaEndpoint {
 		stavka.setDuznik(nalog.getDuznik());
 		stavka.setDatumValute(nalog.getDatumValute());
 		stavka.setDatumNaloga(nalog.getDatumNaloga());
+		stavka.setSmer("t");
 		return stavka;
 	}
 
@@ -276,6 +280,7 @@ public class BankaEndpoint {
 		stavka.setDuznik(nalog.getDuznik());
 		stavka.setDatumValute(nalog.getDatumValute());
 		stavka.setDatumNaloga(nalog.getDatumNaloga());
+		stavka.setSmer("d");
 		return stavka;
 	}
 
@@ -295,9 +300,24 @@ public class BankaEndpoint {
 		stavka.setDuznik(nalog.getDuznik());
 		stavka.setDatumValute(nalog.getDatumNaloga());
 		stavka.setDatumNaloga(nalog.getDatumNaloga());
+		stavka.setSmer("d");
 		return stavka;
 	}
 
+	private ZaglavljePreseka setZaglavljePreseka(String racun, Date datum, BigInteger str, Racun r, BigDecimal ns, BigDecimal unt, BigDecimal unk, BigInteger uk, BigInteger ut) {
+		ZaglavljePreseka zaglavlje = new ZaglavljePreseka();
+		zaglavlje.setBrojPreseka(str);
+		zaglavlje.setBrojPromenaNaTeret(ut);
+		zaglavlje.setBrojPromenaUKorist(uk);
+		zaglavlje.setBrojRacuna(racun);
+		zaglavlje.setDatumNaloga(datum);
+		zaglavlje.setNovoStanje(ns);
+		zaglavlje.setPrethodnoStanje(r.novoStanje);
+		zaglavlje.setUkupnoNaTeret(unt);
+		zaglavlje.setUkupnoUKorist(unk);
+		return zaglavlje;
+	}
+	
 	private List<Nalog> getNalogeZaBankuDanIRacun(Date datum, String brRacuna) {
 		List<Nalog> nalozi = new ArrayList<Nalog>();
 		List<Nalog> naloziUBazi = nalogRep.findByracunDuznika(brRacuna);
@@ -347,7 +367,9 @@ public class BankaEndpoint {
 
 		Date datum = request.getZahtev().getDatumZahteva();
 		String brRacuna = request.getZahtev().getBrojRacuna();
+		Racun r = racunRep.findByBrojRacuna(brRacuna);
 		int stranica = request.getZahtev().getRedniBrojPreseka().intValue();
+		BigInteger str = request.getZahtev().getRedniBrojPreseka();
 		List<Nalog> nalozi = getNalogeZaBankuDanIRacun(datum, brRacuna);
 		List<MT103> mt103 = getFrom103(datum, brRacuna);
 		List<PojedinacnoPlacanjeMT102> mt102 = getFrom102(datum, brRacuna);
@@ -361,16 +383,19 @@ public class BankaEndpoint {
 		for (int i = 0; i < nalozi.size(); i++) {
 			StavkaPreseka stavka = setStavkaNalogaIzNaloga(nalozi.get(i));
 			spreseci.add(stavka);
+			
 		}
 
 		for (int i = 0; i < mt103.size(); i++) {
 			StavkaPreseka stavka = setStavka103Iz103(mt103.get(i));
 			spreseci.add(stavka);
+			
 		}
 
 		for (int i = 0; i < mt102.size(); i++) {
 			StavkaPreseka stavka = setStavka102Iz102(mt102.get(i));
 			spreseci.add(stavka);
+			
 		}
 
 		if (spreseci.size() < start)
@@ -382,15 +407,42 @@ public class BankaEndpoint {
 		else // ako je normalno
 			stranicaStavki = spreseci.subList(start, start + velicinaStranice);
 
-        presek.getStavkaPreseka().addAll(stranicaStavki);
-/*
-		for (int i = 0; i < stranicaStavki.size(); i++) {
-			presek.getStavkaPreseka().add(stranicaStavki.get(i));
-			System.out.println(stranicaStavki.get(i).getIznos());
+		System.out.println("-----Krece Zaglavlje-----");
+		
+		BigDecimal ns = r.novoStanje;
+		
+		for(int i=0;i<stranicaStavki.size();i++){
+		   if(stranicaStavki.get(i).getSmer().equals("d")){
+			ns = ns.add(stranicaStavki.get(i).getIznos());
+		}else{
+		    ns =ns.subtract(stranicaStavki.get(i).getIznos());	
 		}
-		*/
+		}
+		
+		BigDecimal unk = BigDecimal.ZERO;
+		BigDecimal unt = BigDecimal.ZERO;
+		BigInteger uk = BigInteger.ZERO;
+		BigInteger ut = BigInteger.ZERO;
+		BigInteger inc = BigInteger.ONE;
+		for(int i=0;i<stranicaStavki.size();i++){
+			   if(stranicaStavki.get(i).getSmer().equals("d")){
+				unk = unk.add(stranicaStavki.get(i).getIznos());
+				uk = uk.add(inc);
+			}else{
+				unt = unt.add(stranicaStavki.get(i).getIznos()); 
+                ut = ut.add(inc);
+			}
+			}
+		System.out.println("ut: " + ut);
+		System.out.println("uk: "+uk);
+        presek.getStavkaPreseka().addAll(stranicaStavki);
+        System.out.println("dosao ovdee");
+        ZaglavljePreseka z = setZaglavljePreseka(brRacuna, datum, str, r, ns, unt, unk, uk, ut);
+        
+        presek.setZaglavljePreseka(z);
+        
 		response.setPresek(presek);
-
+        
 		return response;
 
 	}

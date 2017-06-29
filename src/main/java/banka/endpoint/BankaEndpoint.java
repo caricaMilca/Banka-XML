@@ -115,7 +115,7 @@ public class BankaEndpoint {
 
 		if (bankaPrimaoca == null
 				|| nalog.getIznos().compareTo(duznik.novoStanje.subtract(duznik.rezervisanaSredstva)) == 1)
-			return response;
+			return null;
 		String uri = "http://localhost:" + narodnaBankaPort + "/ws";
 		webServiceTemplate.setDefaultUri(uri);
 		if (nalog.isHitno()) { // rtgs

@@ -2,44 +2,44 @@
 <getMT102Request xmlns="http://paket/mt102">
     <MT102>
         <zaglavljeMT102>
-            <idPoruke>ecbb7717-9ff6-470c-bce5-a553d4695219</idPoruke>
-            <swiftKodBankeDuznika>BKKKRS22</swiftKodBankeDuznika>
-            <obracunskiRacunBankeDuznika>124124124124124124</obracunskiRacunBankeDuznika>
-            <swiftKodBankePoverioca>BANKRS22</swiftKodBankePoverioca>
-            <obracunskiRacunBankePoverioca>123123123123123123</obracunskiRacunBankePoverioca>
-            <ukupanIznos>525.66</ukupanIznos>
+            <idPoruke>c1a13370-d040-45fc-9cff-33c2a6f6d520</idPoruke>
+            <swiftKodBankeDuznika>BANKRS22</swiftKodBankeDuznika>
+            <obracunskiRacunBankeDuznika>123123123123123123</obracunskiRacunBankeDuznika>
+            <swiftKodBankePoverioca>BKKKRS22</swiftKodBankePoverioca>
+            <obracunskiRacunBankePoverioca>124124124124124124</obracunskiRacunBankePoverioca>
+            <ukupanIznos>61.59</ukupanIznos>
             <sifraValute>rsd</sifraValute>
-            <datumValute>2017-06-28</datumValute>
-            <datum>2017-06-28</datum>
+            <datumValute>2017-06-29</datumValute>
+            <datum>2017-06-29</datum>
         </zaglavljeMT102>
         <pojedinacnoPlacanjeMT102>
-            <idNalogaZaPlacanje>9035c902-07a5-4033-89cf-753c3c6156ed</idNalogaZaPlacanje>
-            <duznik>sdfsdf</duznik>
+            <idNalogaZaPlacanje>386a9abd-b018-4465-9170-c161b82604a2</idNalogaZaPlacanje>
+            <duznik>nke</duznik>
             <svrhaPlacanja>svrha placanja</svrhaPlacanja>
-            <primalac>Ceks1</primalac>
-            <datumNaloga>2017-06-28</datumNaloga>
-            <racunDuznika>124222222222222222</racunDuznika>
+            <primalac>Ceks</primalac>
+            <datumNaloga>2017-06-29</datumNaloga>
+            <racunDuznika>123111111111111111</racunDuznika>
             <modelZaduzenja>97</modelZaduzenja>
             <pozivNaBrojZaduzenja>11111111111111111111</pozivNaBrojZaduzenja>
-            <racunPoverioca>123111111111111111</racunPoverioca>
+            <racunPoverioca>124222222222222222</racunPoverioca>
             <modelOdobrenja>97</modelOdobrenja>
             <pozivNaBrojOdobrenja>22222222222222222222</pozivNaBrojOdobrenja>
-            <iznos>525.66</iznos>
+            <iznos>61.59</iznos>
             <sifraValute>rsd</sifraValute>
         </pojedinacnoPlacanjeMT102>
         <pojedinacnoPlacanjeMT102>
-            <idNalogaZaPlacanje>69e7f509-66fe-43ad-b161-dd38ff18c632</idNalogaZaPlacanje>
-            <duznik>sdfsdf</duznik>
+            <idNalogaZaPlacanje>5fa523e5-9ad1-43ea-8088-9b0943bb1e7d</idNalogaZaPlacanje>
+            <duznik>nke</duznik>
             <svrhaPlacanja>svrha placanja</svrhaPlacanja>
-            <primalac>Ceks1</primalac>
-            <datumNaloga>2017-06-28</datumNaloga>
-            <racunDuznika>124222222222222222</racunDuznika>
+            <primalac>Ceks</primalac>
+            <datumNaloga>2017-06-29</datumNaloga>
+            <racunDuznika>123111111111111111</racunDuznika>
             <modelZaduzenja>97</modelZaduzenja>
             <pozivNaBrojZaduzenja>11111111111111111111</pozivNaBrojZaduzenja>
-            <racunPoverioca>123111111111111111</racunPoverioca>
+            <racunPoverioca>124222222222222222</racunPoverioca>
             <modelOdobrenja>97</modelOdobrenja>
             <pozivNaBrojOdobrenja>22222222222222222222</pozivNaBrojOdobrenja>
-            <iznos>525.66</iznos>
+            <iznos>79.75</iznos>
             <sifraValute>rsd</sifraValute>
         </pojedinacnoPlacanjeMT102>
     </MT102>

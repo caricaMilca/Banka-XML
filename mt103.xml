@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <GetMT103Request xmlns="http://paket/mt103">
     <MT103>
-        <idPoruke>c7b2d2fc-2b48-4913-b163-d834d423a372</idPoruke>
+        <idPoruke>a10be21f-a1ea-475e-b116-602d3e276820</idPoruke>
         <swifKodBankeDuznika>BKKKRS22</swifKodBankeDuznika>
         <obracunskiRacunBankeDuznika>124124124124124124</obracunskiRacunBankeDuznika>
         <swiftKodBankePoverioca>BANKRS22</swiftKodBankePoverioca>
         <obracunskiRacunBankePoverioca>123123123123123123</obracunskiRacunBankePoverioca>
-        <duznik>sdfsdf</duznik>
+        <duznik>Ceks1</duznik>
         <svrhaPlacanja>svrha placanja</svrhaPlacanja>
         <primalac>Ceks1</primalac>
-        <datumNaloga>2017-06-28</datumNaloga>
-        <datumValute>2017-06-28</datumValute>
+        <datumNaloga>2017-06-29</datumNaloga>
+        <datumValute>2017-06-29</datumValute>
         <racunDuznika>124222222222222222</racunDuznika>
         <modelZaduzenja>97</modelZaduzenja>
         <pozivNaBrojZaduzenja>11111111111111111111</pozivNaBrojZaduzenja>
         <racunPoverioca>123111111111111111</racunPoverioca>
         <modelOdobrenja>97</modelOdobrenja>
         <pozivNaBrojOdobrenja>22222222222222222222</pozivNaBrojOdobrenja>
-        <iznos>52.21</iznos>
+        <iznos>953.16</iznos>
         <sifraValute>rsd</sifraValute>
     </MT103>
 </GetMT103Request>

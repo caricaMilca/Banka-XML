@@ -407,7 +407,6 @@ public class BankaEndpoint {
 		else // ako je normalno
 			stranicaStavki = spreseci.subList(start, start + velicinaStranice);
 
-		System.out.println("-----Krece Zaglavlje-----");
 		
 		BigDecimal ns = r.novoStanje;
 		
@@ -433,10 +432,7 @@ public class BankaEndpoint {
                 ut = ut.add(inc);
 			}
 			}
-		System.out.println("ut: " + ut);
-		System.out.println("uk: "+uk);
         presek.getStavkaPreseka().addAll(stranicaStavki);
-        System.out.println("dosao ovdee");
         ZaglavljePreseka z = setZaglavljePreseka(brRacuna, datum, str, r, ns, unt, unk, uk, ut);
         
         presek.setZaglavljePreseka(z);

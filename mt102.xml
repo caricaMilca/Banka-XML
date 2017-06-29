@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<getMT102Request xmlns="http://paket/mt102">
+    <MT102>
+        <zaglavljeMT102>
+            <idPoruke>ecbb7717-9ff6-470c-bce5-a553d4695219</idPoruke>
+            <swiftKodBankeDuznika>BKKKRS22</swiftKodBankeDuznika>
+            <obracunskiRacunBankeDuznika>124124124124124124</obracunskiRacunBankeDuznika>
+            <swiftKodBankePoverioca>BANKRS22</swiftKodBankePoverioca>
+            <obracunskiRacunBankePoverioca>123123123123123123</obracunskiRacunBankePoverioca>
+            <ukupanIznos>525.66</ukupanIznos>
+            <sifraValute>rsd</sifraValute>
+            <datumValute>2017-06-28</datumValute>
+            <datum>2017-06-28</datum>
+        </zaglavljeMT102>
+        <pojedinacnoPlacanjeMT102>
+            <idNalogaZaPlacanje>9035c902-07a5-4033-89cf-753c3c6156ed</idNalogaZaPlacanje>
+            <duznik>sdfsdf</duznik>
+            <svrhaPlacanja>svrha placanja</svrhaPlacanja>
+            <primalac>Ceks1</primalac>
+            <datumNaloga>2017-06-28</datumNaloga>
+            <racunDuznika>124222222222222222</racunDuznika>
+            <modelZaduzenja>97</modelZaduzenja>
+            <pozivNaBrojZaduzenja>11111111111111111111</pozivNaBrojZaduzenja>
+            <racunPoverioca>123111111111111111</racunPoverioca>
+            <modelOdobrenja>97</modelOdobrenja>
+            <pozivNaBrojOdobrenja>22222222222222222222</pozivNaBrojOdobrenja>
+            <iznos>525.66</iznos>
+            <sifraValute>rsd</sifraValute>
+        </pojedinacnoPlacanjeMT102>
+        <pojedinacnoPlacanjeMT102>
+            <idNalogaZaPlacanje>69e7f509-66fe-43ad-b161-dd38ff18c632</idNalogaZaPlacanje>
+            <duznik>sdfsdf</duznik>
+            <svrhaPlacanja>svrha placanja</svrhaPlacanja>
+            <primalac>Ceks1</primalac>
+            <datumNaloga>2017-06-28</datumNaloga>
+            <racunDuznika>124222222222222222</racunDuznika>
+            <modelZaduzenja>97</modelZaduzenja>
+            <pozivNaBrojZaduzenja>11111111111111111111</pozivNaBrojZaduzenja>
+            <racunPoverioca>123111111111111111</racunPoverioca>
+            <modelOdobrenja>97</modelOdobrenja>
+            <pozivNaBrojOdobrenja>22222222222222222222</pozivNaBrojOdobrenja>
+            <iznos>525.66</iznos>
+            <sifraValute>rsd</sifraValute>
+        </pojedinacnoPlacanjeMT102>
+    </MT102>
+</getMT102Request>

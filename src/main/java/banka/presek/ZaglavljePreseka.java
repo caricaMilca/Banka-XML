@@ -10,12 +10,16 @@ package banka.presek;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.sql.Date;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import xmlTransformacije.Adapter1;
 
 
 /**
@@ -63,7 +67,8 @@ public class ZaglavljePreseka {
     protected String brojRacuna;
     @XmlElement(required = true)
     @XmlSchemaType(name = "date")
-    protected XMLGregorianCalendar datumNaloga;
+    @XmlJavaTypeAdapter(Adapter1.class)
+    protected Date datumNaloga;
     @XmlElement(required = true)
     protected BigInteger brojPreseka;
     @XmlElement(required = true)
@@ -108,10 +113,10 @@ public class ZaglavljePreseka {
      * 
      * @return
      *     possible object is
-     *     {@link XMLGregorianCalendar }
+     *     {@link Date }
      *     
      */
-    public XMLGregorianCalendar getDatumNaloga() {
+    public Date getDatumNaloga() {
         return datumNaloga;
     }
 
@@ -120,10 +125,10 @@ public class ZaglavljePreseka {
      * 
      * @param value
      *     allowed object is
-     *     {@link XMLGregorianCalendar }
+     *     {@link Date }
      *     
      */
-    public void setDatumNaloga(XMLGregorianCalendar value) {
+    public void setDatumNaloga(Date value) {
         this.datumNaloga = value;
     }
 
